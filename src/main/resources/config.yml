@@ -1,0 +1,10 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+
+database:
+  driverClass: com.mysql.cj.jdbc.Driver
+  user: root
+  password: root
+  url: jdbc:mysql://localhost:3306/hovedopg_DB?serverTimezone=UTC

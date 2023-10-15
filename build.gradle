@@ -1,0 +1,53 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
+}
+
+group = "org.example"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+    // Dropwizard
+    implementation platform('io.dropwizard:dropwizard-dependencies:2.0.29')
+    implementation 'io.dropwizard:dropwizard-core'
+    implementation 'io.dropwizard:dropwizard-auth'
+    implementation 'io.dropwizard:dropwizard-views-mustache'
+    implementation 'io.dropwizard:dropwizard-assets'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.13.3'
+
+    // JDBI
+    implementation('io.dropwizard:dropwizard-jdbi3:2.1.5')
+
+    // MySQL driver
+    implementation('mysql:mysql-connector-java:8.0.33')
+
+    // Guicey
+    implementation 'ru.vyarus:dropwizard-guicey:5.5.0'
+
+    // Testing
+    testImplementation('org.junit.jupiter:junit-jupiter:5.9.3')
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.4.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.0.0'
+    testImplementation 'io.dropwizard:dropwizard-testing'
+}
+
+tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = '11'
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = '11'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
