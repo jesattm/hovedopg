@@ -13,3 +13,7 @@ interface AccountDao {
     fun create(): Int
 
 }
+
+data class Account(
+    val id: Int,
+)
