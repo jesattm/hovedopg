@@ -17,7 +17,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val claimDao = jdbi.onDemand(ClaimDao::class.java)
 
         val postAccount = PostAccount(accountDao)
-        val postClaim = PostClaim(claimDao)
+        val postClaim = PostClaim(claimDao, accountDao)
 
         //Register endpoints
         env.jersey().register(postAccount)
