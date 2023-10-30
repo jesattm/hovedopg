@@ -1,7 +1,7 @@
 import api.accounts.PostAccount
-import api.claims.PostClaim
+import api.devices.PostDevice
 import database.AccountDao
-import database.ClaimDao
+import database.DeviceDao
 import io.dropwizard.Application
 import io.dropwizard.jdbi3.JdbiFactory
 import io.dropwizard.setup.Environment
@@ -14,14 +14,14 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val jdbi: Jdbi = factory.build(env, config.database, "mysql")
 
         val accountDao = jdbi.onDemand(AccountDao::class.java)
-        val claimDao = jdbi.onDemand(ClaimDao::class.java)
+        val deviceDao = jdbi.onDemand(DeviceDao::class.java)
 
         val postAccount = PostAccount(accountDao)
-        val postClaim = PostClaim(claimDao, accountDao)
+        val postDevice = PostDevice(deviceDao, accountDao)
 
         //Register endpoints
         env.jersey().register(postAccount)
-        env.jersey().register(postClaim)
+        env.jersey().register(postDevice)
     }
 
 }

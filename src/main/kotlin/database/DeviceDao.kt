@@ -4,10 +4,10 @@ import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
-interface ClaimDao {
+interface DeviceDao {
 
     @SqlUpdate("""
-        INSERT INTO claims (account_id)
+        INSERT INTO devices (account_id)
         VALUES (:accountId)
     """)
     @GetGeneratedKeys
@@ -17,7 +17,7 @@ interface ClaimDao {
 
 }
 
-data class Claim(
+data class Device(
     val id: Int,
     val accountId: Int,
 )

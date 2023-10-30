@@ -1,8 +1,8 @@
-package api.claims
+package api.devices
 
 import database.AccountDao
-import database.Claim
-import database.ClaimDao
+import database.Device
+import database.DeviceDao
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -11,9 +11,9 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
-@Path("/api/accounts/{accountId}/claims")
-class PostClaim(
-    private val claimDao: ClaimDao,
+@Path("/api/accounts/{accountId}/devices")
+class PostDevice(
+    private val deviceDao: DeviceDao,
     private val accountDao: AccountDao,
 ) {
 
@@ -29,10 +29,10 @@ class PostClaim(
             return Response.status(404).build()
         }
 
-        val claimId = claimDao.create(accountId)
-        val claim = Claim(claimId, accountId)
+        val deviceId = deviceDao.create(accountId)
+        val device = Device(deviceId, accountId)
 
-        return Response.status(201).entity(claim).build()
+        return Response.status(201).entity(device).build()
     }
 
 }
