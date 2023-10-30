@@ -1,4 +1,4 @@
-package api.account
+package api.accounts
 
 import database.Account
 import database.AccountDao

@@ -1,5 +1,5 @@
-import api.account.PostAccount
-import api.claim.PostClaim
+import api.accounts.PostAccount
+import api.claims.PostClaim
 import database.AccountDao
 import database.ClaimDao
 import io.dropwizard.Application

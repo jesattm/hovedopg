@@ -1,4 +1,4 @@
-package api.claim
+package api.claims
 
 import database.AccountDao
 import database.Claim
