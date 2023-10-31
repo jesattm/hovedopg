@@ -2,6 +2,7 @@ package api.holds
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import database.DeviceDao
 import database.HoldDao
 import java.time.Instant
 import javax.ws.rs.Consumes
@@ -14,7 +15,8 @@ import javax.ws.rs.core.Response
 
 @Path("/api/devices/{deviceId}/holds")
 class PostHold(
-    private val dao: HoldDao,
+    private val holdDao: HoldDao,
+    private val deviceDao: DeviceDao,
 ) {
 
     @POST
@@ -25,8 +27,13 @@ class PostHold(
         deviceId: Int,
         body: CreateHoldBody,
     ): Response {
+        val device = deviceDao.find(deviceId)
+        if (device == null) {
+            return Response.status(404, "A device with id = $deviceId does not exist.").build()
+        }
+
         val start = Instant.parse(body.start)
-        val holdId = dao.create(body.label, start, null, deviceId)
+        val holdId = holdDao.create(body.label, start, null, deviceId)
 
         val response = PostHoldResponse(holdId.toString(), body.label, body.start, null, deviceId.toString())
         return Response.status(201).entity(response).build()
@@ -35,8 +42,10 @@ class PostHold(
 }
 
 data class CreateHoldBody @JsonCreator constructor(
-    @JsonProperty("label") val label: String,
-    @JsonProperty("start") val start: String,
+    @JsonProperty("label")
+    val label: String,
+    @JsonProperty("start")
+    val start: String,
 )
 
 data class PostHoldResponse(

@@ -21,7 +21,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
 
         val postAccount = PostAccount(accountDao)
         val postDevice = PostDevice(deviceDao, accountDao)
-        val postHold = PostHold(holdDao)
+        val postHold = PostHold(holdDao, deviceDao)
 
         //Register endpoints
         env.jersey().register(postAccount)
