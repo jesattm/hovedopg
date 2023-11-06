@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Path("/api/accounts")
-class PostAccount(
+class CreateAccount(
     private val dao: AccountDao,
 ) {
 

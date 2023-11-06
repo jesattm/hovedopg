@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Path("/api/accounts/{accountId}/devices")
-class PostDevice(
+class CreateDevice(
     private val deviceDao: DeviceDao,
     private val accountDao: AccountDao,
 ) {

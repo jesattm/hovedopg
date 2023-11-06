@@ -1,6 +1,6 @@
-import api.accounts.PostAccount
-import api.devices.PostDevice
-import api.holds.PostHold
+import api.accounts.CreateAccount
+import api.devices.CreateDevice
+import api.holds.CreateHold
 import database.AccountDao
 import database.DeviceDao
 import database.HoldDao
@@ -19,9 +19,9 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val deviceDao = jdbi.onDemand(DeviceDao::class.java)
         val holdDao = jdbi.onDemand(HoldDao::class.java)
 
-        val postAccount = PostAccount(accountDao)
-        val postDevice = PostDevice(deviceDao, accountDao)
-        val postHold = PostHold(holdDao, deviceDao)
+        val postAccount = CreateAccount(accountDao)
+        val postDevice = CreateDevice(deviceDao, accountDao)
+        val postHold = CreateHold(holdDao, deviceDao)
 
         //Register endpoints
         env.jersey().register(postAccount)

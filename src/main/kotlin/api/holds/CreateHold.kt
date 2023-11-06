@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Path("/api/devices/{deviceId}/holds")
-class PostHold(
+class CreateHold(
     private val holdDao: HoldDao,
     private val deviceDao: DeviceDao,
 ) {
