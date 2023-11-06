@@ -20,11 +20,3 @@ interface HoldDao {
     ): Int
 
 }
-
-data class Hold(
-    val id: Int,
-    val label: String,
-    val start: Instant,
-    val end: Instant?,
-    val deviceId: Int,
-)
