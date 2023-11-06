@@ -1,6 +1,7 @@
 import api.accounts.CreateAccount
 import api.devices.CreateDevice
 import api.holds.CreateHold
+import api.holds.ActiveLabelChecker
 import database.AccountDao
 import database.DeviceDao
 import database.HoldDao
@@ -24,14 +25,19 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val deviceDao = jdbi.onDemand(DeviceDao::class.java)
         val holdDao = jdbi.onDemand(HoldDao::class.java)
 
-        val postAccount = CreateAccount(accountDao)
-        val postDevice = CreateDevice(deviceDao, accountDao)
-        val postHold = CreateHold(holdDao, fakeLabelDatabase, deviceDao)
+        val createAccount = CreateAccount(accountDao)
+        val createDevice = CreateDevice(deviceDao, accountDao)
+        val createHold = CreateHold(
+            holdDao,
+            fakeLabelDatabase,
+            deviceDao,
+            ActiveLabelChecker(holdDao),
+            )
 
         //Register endpoints
-        env.jersey().register(postAccount)
-        env.jersey().register(postDevice)
-        env.jersey().register(postHold)
+        env.jersey().register(createAccount)
+        env.jersey().register(createDevice)
+        env.jersey().register(createHold)
     }
 
 }

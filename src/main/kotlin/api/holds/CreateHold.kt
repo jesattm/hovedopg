@@ -18,8 +18,9 @@ import javax.ws.rs.core.Response
 @Path("/api/devices/{deviceId}/holds")
 class CreateHold(
     private val holdDao: HoldDao,
-    private val labelDatabase: FakeLabelsDatabase,
+    private val labels: FakeLabelsDatabase,
     private val deviceDao: DeviceDao,
+    private val checker: ActiveLabelChecker,
 ) {
 
     @POST
@@ -32,22 +33,27 @@ class CreateHold(
         body: CreateHoldBody,
     ): Response {
         if (body.label.length != 8) {
-            return Response
-                .status(422, "The label must be 8 characters.")
-                .build()
+            return Response.status(422, "Label must have 8 characters.").build()
         }
 
-        if (labelDatabase.find(body.label) == null) {
-            return Response
-                .status(404, "The provided label does not exist.")
-                .build()
+        val label = labels.find(body.label)
+        if (label == null) {
+            return Response.status(404, "Label not found.").build()
+        }
+
+        val active = checker.check(body.label)
+        if (active) {
+            return Response.status(409, "Label in use.").build()
         }
 
         val device = deviceDao.find(deviceId)
         if (device == null) {
-            return Response
-                .status(404, "A device with id = $deviceId does not exist.")
-                .build()
+            return Response.status(404, "Device not found.").build()
+        }
+
+        val hold = holdDao.findByDevice(deviceId)
+        if (hold != null) {
+            return Response.status(409, "Device has active hold.").build()
         }
 
         val holdId = holdDao.create(body.label, body.start, null, deviceId)
