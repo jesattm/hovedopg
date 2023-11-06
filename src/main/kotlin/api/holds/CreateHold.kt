@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import database.DeviceDao
 import database.HoldDao
+import database.labels.FakeLabelsDatabase
 import java.time.Instant
 import javax.validation.constraints.NotNull
 import javax.ws.rs.Consumes
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Response
 @Path("/api/devices/{deviceId}/holds")
 class CreateHold(
     private val holdDao: HoldDao,
+    private val labelDatabase: FakeLabelsDatabase,
     private val deviceDao: DeviceDao,
 ) {
 
@@ -30,12 +32,22 @@ class CreateHold(
         body: CreateHoldBody,
     ): Response {
         if (body.label.length != 8) {
-            return Response.status(422, "The label must be 8 characters.").build()
+            return Response
+                .status(422, "The label must be 8 characters.")
+                .build()
+        }
+
+        if (labelDatabase.find(body.label) == null) {
+            return Response
+                .status(404, "The provided label does not exist.")
+                .build()
         }
 
         val device = deviceDao.find(deviceId)
         if (device == null) {
-            return Response.status(404, "A device with id = $deviceId does not exist.").build()
+            return Response
+                .status(404, "A device with id = $deviceId does not exist.")
+                .build()
         }
 
         val holdId = holdDao.create(body.label, body.start, null, deviceId)

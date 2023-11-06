@@ -17,8 +17,8 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val jdbi: Jdbi = factory.build(env, config.database, "mysql")
 
         // Use fake label database
-        val labelDatabase = FakeLabelsDatabase()
-        labelDatabase.generateLabels()
+        val fakeLabelDatabase = FakeLabelsDatabase()
+        fakeLabelDatabase.generateLabels()
 
         val accountDao = jdbi.onDemand(AccountDao::class.java)
         val deviceDao = jdbi.onDemand(DeviceDao::class.java)
@@ -26,7 +26,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
 
         val postAccount = CreateAccount(accountDao)
         val postDevice = CreateDevice(deviceDao, accountDao)
-        val postHold = CreateHold(holdDao, deviceDao)
+        val postHold = CreateHold(holdDao, fakeLabelDatabase, deviceDao)
 
         //Register endpoints
         env.jersey().register(postAccount)
