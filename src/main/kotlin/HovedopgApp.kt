@@ -4,6 +4,7 @@ import api.holds.CreateHold
 import database.AccountDao
 import database.DeviceDao
 import database.HoldDao
+import database.labels.FakeLabelsDatabase
 import io.dropwizard.Application
 import io.dropwizard.jdbi3.JdbiFactory
 import io.dropwizard.setup.Environment
@@ -14,6 +15,10 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
     override fun run(config: HovedopgConfiguration, env: Environment) {
         val factory = JdbiFactory()
         val jdbi: Jdbi = factory.build(env, config.database, "mysql")
+
+        // Use fake label database
+        val labelDatabase = FakeLabelsDatabase()
+        labelDatabase.generateLabels()
 
         val accountDao = jdbi.onDemand(AccountDao::class.java)
         val deviceDao = jdbi.onDemand(DeviceDao::class.java)
