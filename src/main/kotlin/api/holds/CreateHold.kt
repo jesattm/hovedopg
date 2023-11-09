@@ -59,7 +59,7 @@ class CreateHold(
         val holdId = holdDao.create(body.label, body.start, null, deviceId)
 
         val startString = body.start.toString()
-        val response = PostHoldResponse(holdId, body.label, startString, deviceId)
+        val response = CreateHoldResponse(holdId, body.label, startString, deviceId)
         return Response.status(201).entity(response).build()
     }
 
@@ -72,7 +72,7 @@ data class CreateHoldBody @JsonCreator constructor(
     val start: Instant,
 )
 
-data class PostHoldResponse(
+data class CreateHoldResponse(
     val id: Int,
     val label: String,
     val start: String,
