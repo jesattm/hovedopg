@@ -45,6 +45,16 @@ interface HoldDao {
         @Bind("deviceId") deviceId: Int
     ): Hold?
 
+    @SqlUpdate("""
+        UPDATE holds 
+        SET end = :end
+        WHERE id = :id
+    """)
+    fun setEnd(
+        @Bind("id") id: Int,
+        @Bind("end") end: Instant,
+    )
+
 }
 
 class HoldRowMapper : RowMapper<Hold> {

@@ -2,6 +2,7 @@ import api.accounts.CreateAccount
 import api.devices.CreateDevice
 import api.holds.CreateHold
 import api.holds.ActiveLabelChecker
+import api.holds.ReleaseHold
 import database.AccountDao
 import database.DeviceDao
 import database.HoldDao
@@ -33,11 +34,13 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
             deviceDao,
             ActiveLabelChecker(holdDao),
             )
+        val releaseHold = ReleaseHold(holdDao)
 
         //Register endpoints
         env.jersey().register(createAccount)
         env.jersey().register(createDevice)
         env.jersey().register(createHold)
+        env.jersey().register(releaseHold)
     }
 
 }
