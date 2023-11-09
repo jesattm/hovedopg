@@ -21,6 +21,7 @@ class CreateHold(
     private val labels: FakeLabelsDatabase,
     private val deviceDao: DeviceDao,
     private val checker: ActiveLabelChecker,
+    private val finder: LastestEndFinder,
 ) {
 
     @POST
@@ -41,8 +42,8 @@ class CreateHold(
             return Response.status(404, "Label not found.").build()
         }
 
-        val active = checker.check(body.label)
-        if (active) {
+        val isActive = checker.check(body.label)
+        if (isActive) {
             return Response.status(409, "Label in use.").build()
         }
 
@@ -51,9 +52,20 @@ class CreateHold(
             return Response.status(404, "Device not found.").build()
         }
 
-        val hold = holdDao.findByDevice(deviceId)
-        if (hold != null) {
+        val deviceHolds = holdDao.findByDevice(deviceId)
+
+        val activeHold = deviceHolds.find { it.end == null }
+        if (activeHold != null) {
             return Response.status(409, "Device has active hold.").build()
+        }
+
+        val latestEnd = finder.find(deviceHolds)
+        if (latestEnd != null) {
+            if (body.start <= latestEnd) {
+                return Response
+                    .status(422, "Start must be after previous hold's end.")
+                    .build()
+            }
         }
 
         val holdId = holdDao.create(body.label, body.start, null, deviceId)

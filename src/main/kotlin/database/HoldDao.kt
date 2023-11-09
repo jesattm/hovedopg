@@ -25,26 +25,6 @@ interface HoldDao {
         @Bind("deviceId") deviceId: Int,
     ): Int
 
-    @SqlQuery("""
-        SELECT id, label, start, end, device_id
-        FROM holds
-        WHERE label = :label
-    """)
-    @RegisterRowMapper(HoldRowMapper::class)
-    fun findByLabel(
-        @Bind("label") label: String
-    ): List<Hold>
-
-    @SqlQuery("""
-        SELECT id, label, start, end, device_id
-        FROM holds
-        WHERE device_id = :deviceId
-    """)
-    @RegisterRowMapper(HoldRowMapper::class)
-    fun findByDevice(
-        @Bind("deviceId") deviceId: Int
-    ): Hold?
-
     @SqlUpdate("""
         UPDATE holds 
         SET end = :end
@@ -58,12 +38,32 @@ interface HoldDao {
     @SqlQuery("""
         SELECT id, label, start, end, device_id
         FROM holds
+        WHERE label = :label
+    """)
+    @RegisterRowMapper(HoldRowMapper::class)
+    fun findByLabel(
+        @Bind("label") label: String
+    ): List<Hold>
+
+    @SqlQuery("""
+        SELECT id, label, start, end, device_id
+        FROM holds
         WHERE id = :id
     """)
     @RegisterRowMapper(HoldRowMapper::class)
     fun findById(
         @Bind("id") id: Int
     ): Hold?
+
+    @SqlQuery("""
+        SELECT id, label, start, end, device_id
+        FROM holds
+        WHERE device_id = :deviceId
+    """)
+    @RegisterRowMapper(HoldRowMapper::class)
+    fun findByDevice(
+        @Bind("deviceId") deviceId: Int
+    ): List<Hold>
 
 }
 

@@ -2,6 +2,7 @@ import api.accounts.CreateAccount
 import api.devices.CreateDevice
 import api.holds.CreateHold
 import api.holds.ActiveLabelChecker
+import api.holds.LastestEndFinder
 import api.holds.ReleaseHold
 import database.AccountDao
 import database.DeviceDao
@@ -33,6 +34,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
             fakeLabelDatabase,
             deviceDao,
             ActiveLabelChecker(holdDao),
+            LastestEndFinder()
             )
         val releaseHold = ReleaseHold(holdDao)
 
