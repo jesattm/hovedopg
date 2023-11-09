@@ -55,6 +55,16 @@ interface HoldDao {
         @Bind("end") end: Instant,
     )
 
+    @SqlQuery("""
+        SELECT id, label, start, end, device_id
+        FROM holds
+        WHERE id = :id
+    """)
+    @RegisterRowMapper(HoldRowMapper::class)
+    fun findById(
+        @Bind("id") id: Int
+    ): Hold?
+
 }
 
 class HoldRowMapper : RowMapper<Hold> {
