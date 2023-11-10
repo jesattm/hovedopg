@@ -3,7 +3,7 @@ package api.holds
 import database.Hold
 import java.time.Instant
 
-class LastestEndFinder {
+class LatestEndFinder {
 
     fun find(
         holds: List<Hold>

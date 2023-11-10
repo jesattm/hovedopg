@@ -1,8 +1,9 @@
 import api.accounts.CreateAccount
 import api.devices.CreateDevice
+import api.holds.ActiveHoldFinder
 import api.holds.CreateHold
 import api.holds.ActiveLabelChecker
-import api.holds.LastestEndFinder
+import api.holds.LatestEndFinder
 import api.holds.ReleaseHold
 import database.AccountDao
 import database.DeviceDao
@@ -28,13 +29,14 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val holdDao = jdbi.onDemand(HoldDao::class.java)
 
         val createAccount = CreateAccount(accountDao)
-        val createDevice = CreateDevice(deviceDao, accountDao)
+        val createDevice = CreateDevice(accountDao, deviceDao)
         val createHold = CreateHold(
-            holdDao,
             fakeLabelDatabase,
-            deviceDao,
             ActiveLabelChecker(holdDao),
-            LastestEndFinder()
+            deviceDao,
+            holdDao,
+            ActiveHoldFinder(),
+            LatestEndFinder()
             )
         val releaseHold = ReleaseHold(holdDao)
 

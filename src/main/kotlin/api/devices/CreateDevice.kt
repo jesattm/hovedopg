@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response
 
 @Path("/api/accounts/{accountId}/devices")
 class CreateDevice(
-    private val deviceDao: DeviceDao,
     private val accountDao: AccountDao,
+    private val deviceDao: DeviceDao,
 ) {
 
     @POST

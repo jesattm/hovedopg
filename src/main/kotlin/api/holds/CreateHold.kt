@@ -17,11 +17,12 @@ import javax.ws.rs.core.Response
 
 @Path("/api/devices/{deviceId}/holds")
 class CreateHold(
-    private val holdDao: HoldDao,
     private val labels: FakeLabelsDatabase,
-    private val deviceDao: DeviceDao,
     private val checker: ActiveLabelChecker,
-    private val finder: LastestEndFinder,
+    private val deviceDao: DeviceDao,
+    private val holdDao: HoldDao,
+    private val holdFinder: ActiveHoldFinder,
+    private val endFinder: LatestEndFinder,
 ) {
 
     @POST
@@ -42,8 +43,8 @@ class CreateHold(
             return Response.status(404, "Label not found.").build()
         }
 
-        val isActive = checker.check(body.label)
-        if (isActive) {
+        val activeLabel = checker.check(body.label)
+        if (activeLabel) {
             return Response.status(409, "Label in use.").build()
         }
 
@@ -54,12 +55,12 @@ class CreateHold(
 
         val deviceHolds = holdDao.findByDevice(deviceId)
 
-        val activeHold = deviceHolds.find { it.end == null }
+        val activeHold = holdFinder.find(deviceHolds)
         if (activeHold != null) {
             return Response.status(409, "Device has active hold.").build()
         }
 
-        val latestEnd = finder.find(deviceHolds)
+        val latestEnd = endFinder.find(deviceHolds)
         if (latestEnd != null) {
             if (body.start <= latestEnd) {
                 return Response
