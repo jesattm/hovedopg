@@ -94,7 +94,7 @@ class CreateHoldTest {
         val body = CreateHoldBody(label, start)
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
-        whenever(deviceDao.find(any())).thenReturn(null)
+        whenever(deviceDao.findById(any())).thenReturn(null)
 
         val res = subject.create(deviceId, body)
 
@@ -112,7 +112,7 @@ class CreateHoldTest {
         val hold = Hold(1,"label", Timestamp.valueOf(LocalDateTime.now()), null, 1)
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
-        whenever(deviceDao.find(any())).thenReturn(device)
+        whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(hold)
 
         val res = subject.create(deviceId, body)
@@ -137,7 +137,7 @@ class CreateHoldTest {
         val end = Instant.parse("2022-12-15T15:00:00Z")
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
-        whenever(deviceDao.find(any())).thenReturn(device)
+        whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(null)
         whenever(endFinder.find(any())).thenReturn(end)
 
@@ -159,7 +159,7 @@ class CreateHoldTest {
         val end = Instant.parse("2022-12-15T15:00:00Z")
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
-        whenever(deviceDao.find(any())).thenReturn(device)
+        whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(null)
         whenever(endFinder.find(any())).thenReturn(end)
 
@@ -178,7 +178,7 @@ class CreateHoldTest {
         val end = Instant.parse("2022-12-15T15:00:00Z")
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
-        whenever(deviceDao.find(any())).thenReturn(device)
+        whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(null)
         whenever(endFinder.find(any())).thenReturn(end)
 

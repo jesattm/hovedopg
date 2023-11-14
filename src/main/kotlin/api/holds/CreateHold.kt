@@ -48,7 +48,7 @@ class CreateHold(
             return Response.status(409, "Label in use.").build()
         }
 
-        val device = deviceDao.find(deviceId)
+        val device = deviceDao.findById(deviceId)
         if (device == null) {
             return Response.status(404, "Device not found.").build()
         }

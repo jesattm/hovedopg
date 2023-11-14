@@ -1,8 +1,9 @@
 import api.accounts.CreateAccount
 import api.devices.CreateDevice
+import api.devices.GetDevicesByAccountId
 import api.holds.ActiveHoldFinder
-import api.holds.CreateHold
 import api.holds.ActiveLabelChecker
+import api.holds.CreateHold
 import api.holds.LatestEndFinder
 import api.holds.ReleaseHold
 import database.AccountDao
@@ -39,12 +40,14 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
             LatestEndFinder()
             )
         val releaseHold = ReleaseHold(holdDao)
+        val getDevicesByAccountId = GetDevicesByAccountId(accountDao, deviceDao)
 
         //Register endpoints
         env.jersey().register(createAccount)
         env.jersey().register(createDevice)
         env.jersey().register(createHold)
         env.jersey().register(releaseHold)
+        env.jersey().register(getDevicesByAccountId)
     }
 
 }

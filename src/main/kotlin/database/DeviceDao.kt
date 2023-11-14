@@ -26,9 +26,19 @@ interface DeviceDao {
         WHERE id = :id
     """)
     @RegisterRowMapper(DeviceRowMapper::class)
-    fun find(
+    fun findById(
         @Bind("id") id: Int
     ): Device?
+
+    @SqlQuery("""
+        SELECT id, account_id
+        FROM devices
+        WHERE account_id = :accountId
+    """)
+    @RegisterRowMapper(DeviceRowMapper::class)
+    fun findByAccountId(
+        @Bind("accountId") accountId: Int
+    ): List<Device>
 
 }
 
