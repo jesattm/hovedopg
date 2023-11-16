@@ -40,7 +40,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
             ActiveHoldFinder(),
             LatestEndFinder()
             )
-        val releaseHold = ReleaseHold(holdDao)
+        val releaseHold = ReleaseHold(deviceDao, holdDao, ActiveHoldFinder())
         val getDevicesByAccountId = GetDevicesByAccountId(accountDao, deviceDao)
         val getHoldsByDeviceId = GetHoldsByDeviceId(deviceDao, holdDao)
 
