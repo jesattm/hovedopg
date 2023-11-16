@@ -7,6 +7,7 @@ import api.holds.CreateHold
 import api.holds.GetHoldsByDeviceId
 import api.holds.LatestEndFinder
 import api.holds.ReleaseHold
+import api.holds.ReplaceHold
 import database.AccountDao
 import database.DeviceDao
 import database.HoldDao
@@ -30,19 +31,17 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val deviceDao = jdbi.onDemand(DeviceDao::class.java)
         val holdDao = jdbi.onDemand(HoldDao::class.java)
 
+        val checker = ActiveLabelChecker(holdDao)
+        val holdFinder = ActiveHoldFinder()
+        val endFinder = LatestEndFinder()
+
         val createAccount = CreateAccount(accountDao)
         val createDevice = CreateDevice(accountDao, deviceDao)
-        val createHold = CreateHold(
-            fakeLabelDatabase,
-            ActiveLabelChecker(holdDao),
-            deviceDao,
-            holdDao,
-            ActiveHoldFinder(),
-            LatestEndFinder()
-            )
-        val releaseHold = ReleaseHold(deviceDao, holdDao, ActiveHoldFinder())
+        val createHold = CreateHold(fakeLabelDatabase, checker, deviceDao, holdDao, holdFinder, endFinder)
+        val releaseHold = ReleaseHold(deviceDao, holdDao, holdFinder)
         val getDevicesByAccountId = GetDevicesByAccountId(accountDao, deviceDao)
         val getHoldsByDeviceId = GetHoldsByDeviceId(deviceDao, holdDao)
+        val replaceHold = ReplaceHold(fakeLabelDatabase, checker, deviceDao, holdDao, holdFinder)
 
         //Register endpoints
         env.jersey().register(createAccount)
@@ -51,6 +50,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         env.jersey().register(releaseHold)
         env.jersey().register(getDevicesByAccountId)
         env.jersey().register(getHoldsByDeviceId)
+        env.jersey().register(replaceHold)
     }
 
 }
