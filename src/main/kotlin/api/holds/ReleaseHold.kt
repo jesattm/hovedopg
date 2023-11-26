@@ -26,7 +26,7 @@ class ReleaseHold(
     @Produces(MediaType.APPLICATION_JSON)
     fun release(
         @PathParam("deviceId")
-        deviceId: Int,
+        deviceId: String,
         @NotNull
         body: ReleaseHoldBody,
         ): Response {

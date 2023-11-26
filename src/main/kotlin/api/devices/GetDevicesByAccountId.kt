@@ -1,6 +1,7 @@
 package api.devices
 
 import database.AccountDao
+import database.Device
 import database.DeviceDao
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -19,7 +20,7 @@ class GetDevicesByAccountId(
     @Produces(MediaType.APPLICATION_JSON)
     fun get(
         @PathParam("accountId")
-        accountId: Int
+        accountId: String
     ): Response {
         val account = accountDao.find(accountId)
         if (account == null) {
@@ -28,7 +29,20 @@ class GetDevicesByAccountId(
 
         val devices = deviceDao.findByAccountId(accountId)
 
-        return Response.status(200).entity(devices).build()
+        val result = devices.map { toResponse(it) }
+        return Response.status(200).entity(result).build()
     }
 
+    private fun toResponse(device: Device) = DeviceResponse(
+        device.id,
+        device.accountId,
+        device.timestamp?.toString(),
+    )
+
 }
+
+data class DeviceResponse(
+    val id: String,
+    val accountId: String,
+    val timestamp: String?,
+)

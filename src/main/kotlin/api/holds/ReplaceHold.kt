@@ -29,7 +29,7 @@ class ReplaceHold(
     @Produces(MediaType.APPLICATION_JSON)
     fun replace(
         @PathParam("deviceId")
-        deviceId: Int,
+        deviceId: String,
         @NotNull
         body: ReplaceHoldBody,
     ): Response {
@@ -76,7 +76,7 @@ class ReplaceHold(
         }
 
         holdDao.setEnd(activeHold.id, body.retiredSince)
-        val holdId = holdDao.create(body.replacementLabel, body.claimedSince, null, deviceId)
+        val holdId = holdDao.create(deviceId, body.replacementLabel, body.imei, body.claimedSince, null, body.timestamp)
 
         val response = ReplaceHoldResponse(holdId)
         return Response.status(201).entity(response).build()
@@ -89,8 +89,12 @@ data class ReplaceHoldBody @JsonCreator constructor(
     val retiredSince: Instant,
     @JsonProperty("replacementLabel")
     val replacementLabel: String,
+    @JsonProperty("imei")
+    val imei: String?,
     @JsonProperty("claimedSince")
     val claimedSince: Instant,
+    @JsonProperty("timestamp")
+    val timestamp: Instant?,
 )
 
 data class ReplaceHoldResponse(

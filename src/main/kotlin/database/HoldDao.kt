@@ -14,15 +14,17 @@ import java.time.Instant
 interface HoldDao {
 
     @SqlUpdate("""
-        INSERT INTO holds (label, start, end, device_id)
-        VALUES (:label, :start, :end, :deviceId)
+        INSERT INTO holds (device_id, label, imei, start, end, timestamp)
+        VALUES (:deviceId, :label, :imei, :start, :end, :timestamp)
     """)
     @GetGeneratedKeys
     fun create(
+        @Bind("deviceId") deviceId: String,
         @Bind("label") label: String,
+        @Bind("imei") imei: String?,
         @Bind("start") start: Instant,
         @Bind("end") end: Instant?,
-        @Bind("deviceId") deviceId: Int,
+        @Bind("timestamp") timestamp: Instant?,
     ): Int
 
     @SqlUpdate("""
@@ -36,7 +38,7 @@ interface HoldDao {
     )
 
     @SqlQuery("""
-        SELECT id, label, start, end, device_id
+        SELECT id, device_id, label, imei, start, end, timestamp
         FROM holds
         WHERE label = :label
     """)
@@ -46,7 +48,7 @@ interface HoldDao {
     ): List<Hold>
 
     @SqlQuery("""
-        SELECT id, label, start, end, device_id
+        SELECT id, device_id, label, imei, start, end, timestamp
         FROM holds
         WHERE id = :id
     """)
@@ -56,13 +58,13 @@ interface HoldDao {
     ): Hold?
 
     @SqlQuery("""
-        SELECT id, label, start, end, device_id
+        SELECT id, device_id, label, imei, start, end, timestamp
         FROM holds
         WHERE device_id = :deviceId
     """)
     @RegisterRowMapper(HoldRowMapper::class)
     fun findByDevice(
-        @Bind("deviceId") deviceId: Int
+        @Bind("deviceId") deviceId: String
     ): List<Hold>
 
 }
@@ -70,17 +72,21 @@ interface HoldDao {
 class HoldRowMapper : RowMapper<Hold> {
     override fun map(r: ResultSet, ctx: StatementContext) = Hold(
         r.getInt("id"),
+        r.getString("device_id"),
         r.getString("label"),
+        r.getString("imei"),
         r.getTimestamp("start"),
         r.getTimestamp("end"),
-        r.getInt("device_id"),
+        r.getTimestamp("timestamp"),
     )
 }
 
 data class Hold(
     val id: Int,
+    val deviceId: String,
     val label: String,
+    val imei: String?,
     val start: Timestamp,
     val end: Timestamp?,
-    val deviceId: Int,
+    val timestamp: Timestamp?,
 )

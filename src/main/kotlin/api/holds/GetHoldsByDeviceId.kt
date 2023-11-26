@@ -20,10 +20,10 @@ class GetHoldsByDeviceId(
     @Produces(MediaType.APPLICATION_JSON)
     fun get(
         @PathParam("deviceId")
-        deviceId: Int
+        deviceId: String
     ): Response {
-        val account = deviceDao.findById(deviceId)
-        if (account == null) {
+        val device = deviceDao.findById(deviceId)
+        if (device == null) {
             return Response.status(404).build()
         }
 
@@ -35,18 +35,22 @@ class GetHoldsByDeviceId(
 
     private fun toResponse(hold: Hold) = HoldResponse(
         hold.id,
+        hold.deviceId,
         hold.label,
+        hold.imei,
         hold.start.toString(),
         hold.end?.toString(),
-        hold.deviceId,
+        hold.timestamp?.toString(),
     )
 
 }
 
 data class HoldResponse(
     val id: Int,
+    val deviceId: String,
     val label: String,
+    val imei: String?,
     val start: String,
     val end: String?,
-    val deviceId: Int,
+    val timestamp: String?,
 )

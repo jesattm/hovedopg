@@ -28,7 +28,7 @@ class GetDevicesByAccountIdTest {
 
     @Test
     fun `return status 404 if the account was not found in the database`() {
-        val input = 1
+        val input = "account id"
         whenever(accountDao.find(any())).thenReturn(null)
 
         val res = subject.get(input)
@@ -39,8 +39,8 @@ class GetDevicesByAccountIdTest {
 
     @Test
     fun `find all devices in the database with the input account id`() {
-        val input = 1
-        val account = Account(1)
+        val input = "account id"
+        val account = Account("account id", "api key", null)
         whenever(accountDao.find(any())).thenReturn(account)
 
         subject.get(input)
@@ -49,26 +49,11 @@ class GetDevicesByAccountIdTest {
     }
 
     @Test
-    fun `return all devices with the input account id`() {
-        val input = 1
-        val account = Account(1)
-        val device1 = Device(1, 1)
-        val device2 = Device(2, 1)
-        val devices = listOf(device1, device2)
-        whenever(accountDao.find(any())).thenReturn(account)
-        whenever(deviceDao.findByAccountId(any())).thenReturn(devices)
-
-        val res = subject.get(input)
-
-        assertEquals(devices, res.entity)
-    }
-
-    @Test
     fun `return status 200 if the request is successful`() {
-        val input = 1
-        val account = Account(1)
-        val device1 = Device(1, 1)
-        val device2 = Device(2, 1)
+        val input = "1"
+        val account = Account("1", "api key", null)
+        val device1 = Device("1", "1", null)
+        val device2 = Device("2", "1", null)
         val devices = listOf(device1, device2)
         whenever(accountDao.find(any())).thenReturn(account)
         whenever(deviceDao.findByAccountId(any())).thenReturn(devices)

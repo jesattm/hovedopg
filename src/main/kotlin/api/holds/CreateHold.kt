@@ -30,7 +30,7 @@ class CreateHold(
     @Produces(MediaType.APPLICATION_JSON)
     fun create(
         @PathParam("deviceId")
-        deviceId: Int,
+        deviceId: String,
         @NotNull
         body: CreateHoldBody,
     ): Response {
@@ -69,10 +69,11 @@ class CreateHold(
             }
         }
 
-        val holdId = holdDao.create(body.label, body.start, null, deviceId)
+        val id = holdDao.create(deviceId, body.label, body.imei, body.start, null, body.timestamp)
 
         val startString = body.start.toString()
-        val response = CreateHoldResponse(holdId, body.label, startString, deviceId)
+        val timestampString = body.timestamp?.toString()
+        val response = CreateHoldResponse(id, deviceId, body.label, body.imei, startString, timestampString)
         return Response.status(201).entity(response).build()
     }
 
@@ -81,13 +82,19 @@ class CreateHold(
 data class CreateHoldBody @JsonCreator constructor(
     @JsonProperty("label")
     val label: String,
+    @JsonProperty("imei")
+    val imei: String?,
     @JsonProperty("start")
     val start: Instant,
+    @JsonProperty("timestamp")
+    val timestamp: Instant?
 )
 
 data class CreateHoldResponse(
     val id: Int,
+    val deviceId: String,
     val label: String,
+    val imei: String?,
     val start: String,
-    val deviceId: Int,
+    val timestamp: String?,
 )

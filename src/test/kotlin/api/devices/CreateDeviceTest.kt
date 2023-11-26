@@ -9,6 +9,7 @@ import database.AccountDao
 import database.DeviceDao
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.Instant
 import kotlin.test.assertEquals
 
 class CreateDeviceTest {
@@ -27,19 +28,21 @@ class CreateDeviceTest {
 
     @Test
     fun `look up the account in the database`() {
-        val input = 1
+        val accountIdParam = "account id"
+        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
 
-        subject.create(input)
+        subject.create(accountIdParam, body)
 
-        verify(accountDao).find(1)
+        verify(accountDao).find(accountIdParam)
     }
 
     @Test
     fun `return status 404 if the account was not found in the database`() {
-        val input = 1
+        val accountIdParam = "account id"
+        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
         whenever(accountDao.find(any())).thenReturn(null)
 
-        val res = subject.create(input)
+        val res = subject.create(accountIdParam, body)
 
         val expected = 404
         assertEquals(expected, res.status)
@@ -47,24 +50,26 @@ class CreateDeviceTest {
 
     @Test
     fun `create a new device if the account was found in the database`() {
-        val input = 1
-        val account = Account(1)
+        val accountIdParam = "account id"
+        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
+        val account = Account("id", "api key", null)
         whenever(accountDao.find(any())).thenReturn(account)
 
-        subject.create(input)
+        subject.create(accountIdParam, body)
 
-        verify(deviceDao).create(1)
+        verify(deviceDao).create(body.id, accountIdParam, body.timestamp)
     }
 
     @Test
-    fun `return status 201 if the account was found in the database`() {
-        val input = 1
-        val account = Account(1)
+    fun `return status 204 if the account was found in the database`() {
+        val accountIdParam = "account id"
+        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
+        val account = Account("id", "api key", null)
         whenever(accountDao.find(any())).thenReturn(account)
 
-        val res = subject.create(input)
+        val res = subject.create(accountIdParam, body)
 
-        val expected = 201
+        val expected = 204
         assertEquals(expected, res.status)
     }
 
