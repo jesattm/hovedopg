@@ -7,19 +7,16 @@ import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.sql.ResultSet
-import java.sql.Timestamp
-import java.time.Instant
 
 interface AccountDao {
 
     @SqlUpdate("""
-        INSERT INTO accounts (id, api_key, timestamp)
-        VALUES (:id, :apiKey, :timestamp)
+        INSERT INTO accounts (id, api_key)
+        VALUES (:id, :apiKey)
     """)
     fun create(
         @Bind("id") id: String,
         @Bind("apiKey") apiKey: String,
-        @Bind("timestamp") timestamp: Instant?,
     )
 
     @SqlQuery("""
@@ -38,12 +35,10 @@ class AccountRowMapper : RowMapper<Account> {
     override fun map(r: ResultSet, ctx: StatementContext) = Account(
         r.getString("id"),
         r.getString("api_key"),
-        r.getTimestamp("timestamp"),
     )
 }
 
 data class Account(
     val id: String,
     val apiKey: String,
-    val timestamp: Timestamp?,
 )

@@ -14,8 +14,8 @@ import java.time.Instant
 interface HoldDao {
 
     @SqlUpdate("""
-        INSERT INTO holds (device_id, label, imei, start, end, timestamp)
-        VALUES (:deviceId, :label, :imei, :start, :end, :timestamp)
+        INSERT INTO holds (device_id, label, imei, start, end)
+        VALUES (:deviceId, :label, :imei, :start, :end)
     """)
     @GetGeneratedKeys
     fun create(
@@ -24,7 +24,6 @@ interface HoldDao {
         @Bind("imei") imei: String?,
         @Bind("start") start: Instant,
         @Bind("end") end: Instant?,
-        @Bind("timestamp") timestamp: Instant?,
     ): Int
 
     @SqlUpdate("""
@@ -77,7 +76,6 @@ class HoldRowMapper : RowMapper<Hold> {
         r.getString("imei"),
         r.getTimestamp("start"),
         r.getTimestamp("end"),
-        r.getTimestamp("timestamp"),
     )
 }
 
@@ -88,5 +86,4 @@ data class Hold(
     val imei: String?,
     val start: Timestamp,
     val end: Timestamp?,
-    val timestamp: Timestamp?,
 )

@@ -3,7 +3,6 @@ package api.accounts
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import database.AccountDao
-import java.time.Instant
 import javax.validation.constraints.NotNull
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
@@ -22,7 +21,7 @@ class CreateAccount(
         @NotNull
         body: CreateAccountBody,
     ): Response {
-        dao.create(body.id, body.apiKey, body.timestamp)
+        dao.create(body.id, body.apiKey)
 
         return Response.status(204).build()
     }
@@ -34,6 +33,4 @@ data class CreateAccountBody @JsonCreator constructor(
     val id: String,
     @JsonProperty("apiKey")
     val apiKey: String,
-    @JsonProperty("timestamp")
-    val timestamp: Instant?,
 )

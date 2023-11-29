@@ -9,7 +9,6 @@ import database.AccountDao
 import database.DeviceDao
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.Instant
 import kotlin.test.assertEquals
 
 class CreateDeviceTest {
@@ -29,7 +28,7 @@ class CreateDeviceTest {
     @Test
     fun `look up the account in the database`() {
         val accountIdParam = "account id"
-        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
+        val body = CreateDeviceBody("id")
 
         subject.create(accountIdParam, body)
 
@@ -39,7 +38,7 @@ class CreateDeviceTest {
     @Test
     fun `return status 404 if the account was not found in the database`() {
         val accountIdParam = "account id"
-        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
+        val body = CreateDeviceBody("id")
         whenever(accountDao.find(any())).thenReturn(null)
 
         val res = subject.create(accountIdParam, body)
@@ -51,20 +50,20 @@ class CreateDeviceTest {
     @Test
     fun `create a new device if the account was found in the database`() {
         val accountIdParam = "account id"
-        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
-        val account = Account("id", "api key", null)
+        val body = CreateDeviceBody("id")
+        val account = Account("id", "api key")
         whenever(accountDao.find(any())).thenReturn(account)
 
         subject.create(accountIdParam, body)
 
-        verify(deviceDao).create(body.id, accountIdParam, body.timestamp)
+        verify(deviceDao).create(body.id, accountIdParam)
     }
 
     @Test
     fun `return status 204 if the account was found in the database`() {
         val accountIdParam = "account id"
-        val body = CreateDeviceBody("id", Instant.parse("2022-12-01T15:00:00Z"))
-        val account = Account("id", "api key", null)
+        val body = CreateDeviceBody("id")
+        val account = Account("id", "api key")
         whenever(accountDao.find(any())).thenReturn(account)
 
         val res = subject.create(accountIdParam, body)

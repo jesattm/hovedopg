@@ -76,7 +76,7 @@ class ReplaceHold(
         }
 
         holdDao.setEnd(activeHold.id, body.retiredSince)
-        val holdId = holdDao.create(deviceId, body.replacementLabel, body.imei, body.claimedSince, null, body.timestamp)
+        val holdId = holdDao.create(deviceId, body.replacementLabel, body.imei, body.claimedSince, null)
 
         val response = ReplaceHoldResponse(holdId)
         return Response.status(201).entity(response).build()
@@ -93,8 +93,6 @@ data class ReplaceHoldBody @JsonCreator constructor(
     val imei: String?,
     @JsonProperty("claimedSince")
     val claimedSince: Instant,
-    @JsonProperty("timestamp")
-    val timestamp: Instant?,
 )
 
 data class ReplaceHoldResponse(

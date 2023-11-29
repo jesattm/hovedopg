@@ -40,7 +40,6 @@ class GetHoldsByDeviceId(
         hold.imei,
         hold.start.toString(),
         hold.end?.toString(),
-        hold.timestamp?.toString(),
     )
 
 }
@@ -52,5 +51,4 @@ data class HoldResponse(
     val imei: String?,
     val start: String,
     val end: String?,
-    val timestamp: String?,
 )

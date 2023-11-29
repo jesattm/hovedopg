@@ -5,7 +5,6 @@ import com.nhaarman.mockitokotlin2.verify
 import database.AccountDao
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.Instant
 import kotlin.test.assertEquals
 
 class CreateAccountTest {
@@ -22,15 +21,15 @@ class CreateAccountTest {
 
     @Test
     fun `create a new account in the database`() {
-        val body = CreateAccountBody("id", "api key", Instant.parse("2022-12-01T15:00:00Z"))
+        val body = CreateAccountBody("id", "api key")
         subject.create(body)
 
-        verify(dao).create(body.id, body.apiKey, body.timestamp)
+        verify(dao).create(body.id, body.apiKey)
     }
 
     @Test
     fun `return status 204`() {
-        val body = CreateAccountBody("id", "api key", Instant.parse("2022-12-01T15:00:00Z"))
+        val body = CreateAccountBody("id", "api key")
         val res = subject.create(body)
 
         val expected = 204

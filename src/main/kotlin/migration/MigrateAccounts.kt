@@ -1,7 +1,6 @@
 package migration
 
 import database.AccountDao
-import java.time.Instant
 
 class MigrateAccounts(
     private val dao: AccountDao
@@ -13,8 +12,7 @@ class MigrateAccounts(
         val list = filtered.flatten()
 
         for (event in list) {
-            val instant = Instant.parse(event.timestamp)
-            dao.create(event.accountId, event.apiKey!!, instant)
+            dao.create(event.accountId, event.apiKey!!)
         }
     }
 

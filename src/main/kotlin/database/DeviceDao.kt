@@ -7,19 +7,16 @@ import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.sql.ResultSet
-import java.sql.Timestamp
-import java.time.Instant
 
 interface DeviceDao {
 
     @SqlUpdate("""
-        INSERT INTO devices (id, account_id, timestamp)
-        VALUES (:id, :accountId, :timestamp)
+        INSERT INTO devices (id, account_id)
+        VALUES (:id, :accountId)
     """)
     fun create(
         @Bind("id") id: String,
         @Bind("accountId") accountId: String,
-        @Bind("timestamp") timestamp: Instant?,
     )
 
     @SqlQuery("""
@@ -48,12 +45,10 @@ class DeviceRowMapper : RowMapper<Device> {
     override fun map(r: ResultSet, ctx: StatementContext) = Device(
         r.getString("id"),
         r.getString("account_id"),
-        r.getTimestamp("timestamp"),
     )
 }
 
 data class Device(
     val id: String,
     val accountId: String,
-    val timestamp: Timestamp?
 )

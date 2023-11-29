@@ -23,17 +23,15 @@ class MigrateDevices(
             count += 1
             list.forEach { event ->
                 if (event.eventId == 1) {
-                    val timestampInstant = Instant.parse(event.timestamp)
-                    deviceDao.create(event.deviceId, event.orgId, timestampInstant)
+                    deviceDao.create(event.deviceId, event.orgId)
                     val claimedAtInstant = Instant.parse(event.claimedAt)
-                    lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null, timestampInstant)
+                    lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null)
                     println("Event id 1 created, lastHoldId = $lastHoldId")
                 }
                 else {
                     if (event.type == "DEVICE_CLAIMED") {
-                        val timestampInstant = Instant.parse(event.timestamp)
                         val claimedAtInstant = Instant.parse(event.claimedAt)
-                        lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null, timestampInstant)
+                        lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null)
                         println("Event id over 1 created, lastHoldId = $lastHoldId")
                     }
                     else if (event.type == "DEVICE_RETIRED") {

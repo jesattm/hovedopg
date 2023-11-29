@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import database.AccountDao
 import database.DeviceDao
-import java.time.Instant
 import javax.validation.constraints.NotNull
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
@@ -32,7 +31,7 @@ class CreateDevice(
             return Response.status(404).build()
         }
 
-        deviceDao.create(body.id, accountId, body.timestamp)
+        deviceDao.create(body.id, accountId)
 
         return Response.status(204).build()
     }
@@ -42,6 +41,4 @@ class CreateDevice(
 data class CreateDeviceBody @JsonCreator constructor(
     @JsonProperty("id")
     val id: String,
-    @JsonProperty("timestamp")
-    val timestamp: Instant?,
 )

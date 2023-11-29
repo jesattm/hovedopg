@@ -40,7 +40,7 @@ class GetDevicesByAccountIdTest {
     @Test
     fun `find all devices in the database with the input account id`() {
         val input = "account id"
-        val account = Account("account id", "api key", null)
+        val account = Account("account id", "api key")
         whenever(accountDao.find(any())).thenReturn(account)
 
         subject.get(input)
@@ -51,9 +51,9 @@ class GetDevicesByAccountIdTest {
     @Test
     fun `return status 200 if the request is successful`() {
         val input = "1"
-        val account = Account("1", "api key", null)
-        val device1 = Device("1", "1", null)
-        val device2 = Device("2", "1", null)
+        val account = Account("1", "api key")
+        val device1 = Device("1", "1")
+        val device2 = Device("2", "1")
         val devices = listOf(device1, device2)
         whenever(accountDao.find(any())).thenReturn(account)
         whenever(deviceDao.findByAccountId(any())).thenReturn(devices)

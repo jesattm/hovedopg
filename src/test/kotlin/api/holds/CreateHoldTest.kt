@@ -49,7 +49,7 @@ class CreateHoldTest {
         labelParam: String
     ) {
         val deviceId = "1"
-        val body = CreateHoldBody(labelParam, null, Instant.parse("2022-12-01T15:00:00Z"), null)
+        val body = CreateHoldBody(labelParam, null, Instant.parse("2022-12-01T15:00:00Z"))
 
         val res = subject.create(deviceId, body)
 
@@ -60,7 +60,7 @@ class CreateHoldTest {
     @Test
     fun `return status 404 if the label was not found in the database`() {
         val deviceId = "1"
-        val body = CreateHoldBody("QWER1234", null, Instant.parse("2022-12-01T15:00:00Z"), null)
+        val body = CreateHoldBody("QWER1234", null, Instant.parse("2022-12-01T15:00:00Z"))
         whenever(labels.find(any())).thenReturn(null)
 
         val res = subject.create(deviceId, body)
@@ -73,7 +73,7 @@ class CreateHoldTest {
     fun `return status 409 if the label is in use`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"), null)
+        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"))
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(true)
 
@@ -87,7 +87,7 @@ class CreateHoldTest {
     fun `return status 404 if the device was not found in the database`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"), null)
+        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"))
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(null)
@@ -102,9 +102,9 @@ class CreateHoldTest {
     fun `return status 409 if the device has an active hold`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"), null)
-        val device = Device("1", "1", null)
-        val hold = Hold(1, "1", "label", null, Timestamp.valueOf(LocalDateTime.now()), null, null)
+        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"))
+        val device = Device("1", "1")
+        val hold = Hold(1, "1", "label", null, Timestamp.valueOf(LocalDateTime.now()), null)
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(device)
@@ -126,8 +126,8 @@ class CreateHoldTest {
     ) {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse(startString), null)
-        val device = Device("1", "1", null)
+        val body = CreateHoldBody(label, null, Instant.parse(startString))
+        val device = Device("1", "1")
         val end = Instant.parse("2022-12-15T15:00:00Z")
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
@@ -149,9 +149,8 @@ class CreateHoldTest {
         val label = "QWER1234"
         val imei = "1"
         val start = Instant.parse("2022-12-16T15:00:00Z")
-        val timestamp = Instant.parse("2022-12-16T15:00:00Z")
-        val body = CreateHoldBody(label, imei, start, timestamp)
-        val device = Device("1", "1", null)
+        val body = CreateHoldBody(label, imei, start)
+        val device = Device("1", "1")
         val end = Instant.parse("2022-12-15T15:00:00Z")
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
@@ -161,15 +160,15 @@ class CreateHoldTest {
 
         subject.create(deviceId, body)
 
-        verify(holdDao).create(deviceId, label, imei, start, null, timestamp)
+        verify(holdDao).create(deviceId, label, imei, start, null)
     }
 
     @Test
     fun `return status 201 if the request is successful`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-16T15:00:00Z"), null)
-        val device = Device("1", "1", null)
+        val body = CreateHoldBody(label, null, Instant.parse("2022-12-16T15:00:00Z"))
+        val device = Device("1", "1")
         val end = Instant.parse("2022-12-15T15:00:00Z")
         whenever(labels.find(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)

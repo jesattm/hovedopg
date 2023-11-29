@@ -36,7 +36,6 @@ class GetDevicesByAccountId(
     private fun toResponse(device: Device) = DeviceResponse(
         device.id,
         device.accountId,
-        device.timestamp?.toString(),
     )
 
 }
@@ -44,5 +43,4 @@ class GetDevicesByAccountId(
 data class DeviceResponse(
     val id: String,
     val accountId: String,
-    val timestamp: String?,
 )

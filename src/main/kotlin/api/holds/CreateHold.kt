@@ -69,11 +69,10 @@ class CreateHold(
             }
         }
 
-        val id = holdDao.create(deviceId, body.label, body.imei, body.start, null, body.timestamp)
+        val id = holdDao.create(deviceId, body.label, body.imei, body.start, null)
 
         val startString = body.start.toString()
-        val timestampString = body.timestamp?.toString()
-        val response = CreateHoldResponse(id, deviceId, body.label, body.imei, startString, timestampString)
+        val response = CreateHoldResponse(id, deviceId, body.label, body.imei, startString)
         return Response.status(201).entity(response).build()
     }
 
@@ -86,8 +85,6 @@ data class CreateHoldBody @JsonCreator constructor(
     val imei: String?,
     @JsonProperty("start")
     val start: Instant,
-    @JsonProperty("timestamp")
-    val timestamp: Instant?
 )
 
 data class CreateHoldResponse(
@@ -96,5 +93,4 @@ data class CreateHoldResponse(
     val label: String,
     val imei: String?,
     val start: String,
-    val timestamp: String?,
 )

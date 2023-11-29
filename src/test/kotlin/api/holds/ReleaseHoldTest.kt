@@ -48,7 +48,7 @@ class ReleaseHoldTest {
     fun `return status 404 if the device has no holds`() {
         val deviceId = "1"
         val body = ReleaseHoldBody(Instant.parse("2022-12-15T15:00:00Z"))
-        val device = Device("1", "1", null)
+        val device = Device("1", "1")
         val holds: List<Hold> = listOf()
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -63,10 +63,10 @@ class ReleaseHoldTest {
     fun `return status 409 if there is no active hold on the device`() {
         val deviceId = "1"
         val body = ReleaseHoldBody(Instant.parse("2022-12-15T15:00:00Z"))
-        val device = Device("1", "1", null)
+        val device = Device("1", "1")
         val start = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
         val end = Timestamp.from(Instant.parse("2022-12-16T15:00:00Z"))
-        val hold = Hold(1, deviceId,"1", null, start, end, null)
+        val hold = Hold(1, deviceId,"1", null, start, end)
         val holds = listOf(hold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -88,10 +88,10 @@ class ReleaseHoldTest {
         val deviceId = "1"
         val end = Instant.parse(endString)
         val body = ReleaseHoldBody(end)
-        val device = Device("1", "1", null)
+        val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, "1", "1", null, timestamp, timestamp, null)
-        val activeHold = Hold(2, "1", "2",null, timestamp, null, null)
+        val inactiveHold = Hold(1, "1", "1", null, timestamp, timestamp)
+        val activeHold = Hold(2, "1", "2",null, timestamp, null)
         val holds = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -108,10 +108,10 @@ class ReleaseHoldTest {
         val deviceId = "1"
         val end = Instant.parse("2022-12-16T15:00:00Z")
         val body = ReleaseHoldBody(end)
-        val device = Device("1", "1", null)
+        val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, "1", "1", null, timestamp, timestamp, null)
-        val activeHold = Hold(2, "1", "2", null, timestamp, null, null)
+        val inactiveHold = Hold(1, "1", "1", null, timestamp, timestamp)
+        val activeHold = Hold(2, "1", "2", null, timestamp, null)
         val holds = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -126,10 +126,10 @@ class ReleaseHoldTest {
     fun `return status 204 if the request is successful`() {
         val deviceId = "1"
         val body = ReleaseHoldBody(Instant.parse("2022-12-16T15:00:00Z"))
-        val device = Device("1", "1", null)
+        val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, "1", "1", null, timestamp, timestamp, null)
-        val activeHold = Hold(2, "1", "2", null, timestamp, null, null)
+        val inactiveHold = Hold(1, "1", "1", null, timestamp, timestamp)
+        val activeHold = Hold(2, "1", "2", null, timestamp, null)
         val holds = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
