@@ -37,7 +37,7 @@ interface HoldDao {
     )
 
     @SqlQuery("""
-        SELECT id, device_id, label, imei, start, end, timestamp
+        SELECT id, device_id, label, imei, start, end
         FROM holds
         WHERE label = :label
     """)
@@ -47,7 +47,7 @@ interface HoldDao {
     ): List<Hold>
 
     @SqlQuery("""
-        SELECT id, device_id, label, imei, start, end, timestamp
+        SELECT id, device_id, label, imei, start, end
         FROM holds
         WHERE id = :id
     """)
@@ -57,7 +57,7 @@ interface HoldDao {
     ): Hold?
 
     @SqlQuery("""
-        SELECT id, device_id, label, imei, start, end, timestamp
+        SELECT id, device_id, label, imei, start, end
         FROM holds
         WHERE device_id = :deviceId
     """)

@@ -20,7 +20,7 @@ interface AccountDao {
     )
 
     @SqlQuery("""
-        SELECT id, api_key, timestamp
+        SELECT id, api_key
         FROM accounts
         WHERE id = :id
     """)

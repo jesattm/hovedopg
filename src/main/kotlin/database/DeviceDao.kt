@@ -20,7 +20,7 @@ interface DeviceDao {
     )
 
     @SqlQuery("""
-        SELECT id, account_id, timestamp 
+        SELECT id, account_id
         FROM devices
         WHERE id = :id
     """)
@@ -30,7 +30,7 @@ interface DeviceDao {
     ): Device?
 
     @SqlQuery("""
-        SELECT id, account_id, timestamp 
+        SELECT id, account_id
         FROM devices
         WHERE account_id = :accountId
     """)
