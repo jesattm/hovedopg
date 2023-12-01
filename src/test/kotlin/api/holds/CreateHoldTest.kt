@@ -8,7 +8,7 @@ import database.Device
 import database.DeviceDao
 import database.Hold
 import database.HoldDao
-import database.labels.FakeLabelsDatabase
+import database.stations.FakeStationsDatabase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 
 class CreateHoldTest {
 
-    private lateinit var labels: FakeLabelsDatabase
+    private lateinit var stations: FakeStationsDatabase
     private lateinit var checker: ActiveLabelChecker
     private lateinit var deviceDao: DeviceDao
     private lateinit var holdDao: HoldDao
@@ -30,14 +30,14 @@ class CreateHoldTest {
 
     @BeforeEach
     fun setup() {
-        labels = mock()
+        stations = mock()
         checker = mock()
         deviceDao = mock()
         holdDao = mock()
         holdFinder = mock()
         endFinder = mock()
 
-        subject = CreateHold(labels, checker, deviceDao, holdDao, holdFinder, endFinder)
+        subject = CreateHold(stations, checker, deviceDao, holdDao, holdFinder, endFinder)
     }
 
     @ParameterizedTest
@@ -49,7 +49,7 @@ class CreateHoldTest {
         labelParam: String
     ) {
         val deviceId = "1"
-        val body = CreateHoldBody(labelParam, null, Instant.parse("2022-12-01T15:00:00Z"))
+        val body = CreateHoldBody(labelParam, Instant.parse("2022-12-01T15:00:00Z"))
 
         val res = subject.create(deviceId, body)
 
@@ -60,8 +60,8 @@ class CreateHoldTest {
     @Test
     fun `return status 404 if the label was not found in the database`() {
         val deviceId = "1"
-        val body = CreateHoldBody("QWER1234", null, Instant.parse("2022-12-01T15:00:00Z"))
-        whenever(labels.find(any())).thenReturn(null)
+        val body = CreateHoldBody("QWER1234", Instant.parse("2022-12-01T15:00:00Z"))
+        whenever(stations.findLabel(any())).thenReturn(null)
 
         val res = subject.create(deviceId, body)
 
@@ -73,8 +73,8 @@ class CreateHoldTest {
     fun `return status 409 if the label is in use`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"))
-        whenever(labels.find(any())).thenReturn(label)
+        val body = CreateHoldBody(label,  Instant.parse("2022-12-01T15:00:00Z"))
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(true)
 
         val res = subject.create(deviceId, body)
@@ -87,8 +87,8 @@ class CreateHoldTest {
     fun `return status 404 if the device was not found in the database`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"))
-        whenever(labels.find(any())).thenReturn(label)
+        val body = CreateHoldBody(label, Instant.parse("2022-12-01T15:00:00Z"))
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(null)
 
@@ -102,10 +102,10 @@ class CreateHoldTest {
     fun `return status 409 if the device has an active hold`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-01T15:00:00Z"))
+        val body = CreateHoldBody(label, Instant.parse("2022-12-01T15:00:00Z"))
         val device = Device("1", "1")
-        val hold = Hold(1, "1", "label", null, Timestamp.valueOf(LocalDateTime.now()), null)
-        whenever(labels.find(any())).thenReturn(label)
+        val hold = Hold(1, "1", "label", "imei", Timestamp.valueOf(LocalDateTime.now()), null)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(hold)
@@ -126,10 +126,10 @@ class CreateHoldTest {
     ) {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse(startString))
+        val body = CreateHoldBody(label, Instant.parse(startString))
         val device = Device("1", "1")
         val end = Instant.parse("2022-12-15T15:00:00Z")
-        whenever(labels.find(any())).thenReturn(label)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(null)
@@ -141,22 +141,44 @@ class CreateHoldTest {
         assertEquals(expected, res.status)
     }
 
+    @Test
+    fun `return status 404 if the provided label has no imei`() {
+        val deviceId = "1"
+        val label = "QWER1234"
+        val start = Instant.parse("2022-12-16T15:00:00Z")
+        val body = CreateHoldBody(label, start)
+        val device = Device("1", "1")
+        val end = Instant.parse("2022-12-15T15:00:00Z")
+        whenever(stations.findLabel(any())).thenReturn(label)
+        whenever(checker.check(any())).thenReturn(false)
+        whenever(deviceDao.findById(any())).thenReturn(device)
+        whenever(holdFinder.find(any())).thenReturn(null)
+        whenever(endFinder.find(any())).thenReturn(end)
+        whenever(stations.findImeiByLabel(any())).thenReturn(null)
+
+        val res = subject.create(deviceId, body)
+
+        val expected = 404
+        assertEquals(expected, res.status)
+    }
+
 
 
     @Test
     fun `create a hold with the input data if the request is valid`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val imei = "1"
         val start = Instant.parse("2022-12-16T15:00:00Z")
-        val body = CreateHoldBody(label, imei, start)
+        val body = CreateHoldBody(label, start)
         val device = Device("1", "1")
         val end = Instant.parse("2022-12-15T15:00:00Z")
-        whenever(labels.find(any())).thenReturn(label)
+        val imei = "imei"
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(null)
         whenever(endFinder.find(any())).thenReturn(end)
+        whenever(stations.findImeiByLabel(any())).thenReturn(imei)
 
         subject.create(deviceId, body)
 
@@ -167,14 +189,16 @@ class CreateHoldTest {
     fun `return status 201 if the request is successful`() {
         val deviceId = "1"
         val label = "QWER1234"
-        val body = CreateHoldBody(label, null, Instant.parse("2022-12-16T15:00:00Z"))
+        val body = CreateHoldBody(label, Instant.parse("2022-12-16T15:00:00Z"))
         val device = Device("1", "1")
         val end = Instant.parse("2022-12-15T15:00:00Z")
-        whenever(labels.find(any())).thenReturn(label)
+        val imei = "imei"
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdFinder.find(any())).thenReturn(null)
         whenever(endFinder.find(any())).thenReturn(end)
+        whenever(stations.findImeiByLabel(any())).thenReturn(imei)
 
         val res = subject.create(deviceId, body)
 

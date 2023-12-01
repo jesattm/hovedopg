@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import database.DeviceDao
 import database.HoldDao
-import database.labels.FakeLabelsDatabase
+import database.stations.FakeStationsDatabase
 import java.time.Instant
 import javax.validation.constraints.NotNull
 import javax.ws.rs.Consumes
@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response
 
 @Path("/api/devices/{deviceId}/holds")
 class CreateHold(
-    private val labels: FakeLabelsDatabase,
+    private val stations: FakeStationsDatabase,
     private val checker: ActiveLabelChecker,
     private val deviceDao: DeviceDao,
     private val holdDao: HoldDao,
@@ -38,7 +38,7 @@ class CreateHold(
             return Response.status(422, "Label must have 8 characters.").build()
         }
 
-        val label = labels.find(body.label)
+        val label = stations.findLabel(body.label)
         if (label == null) {
             return Response.status(404, "Label not found.").build()
         }
@@ -69,10 +69,14 @@ class CreateHold(
             }
         }
 
-        val id = holdDao.create(deviceId, body.label, body.imei, body.start, null)
+        val imei = stations.findImeiByLabel(body.label)
+        if (imei == null) {
+            return Response.status(404, "Imei not found.").build()
+        }
 
-        val startString = body.start.toString()
-        val response = CreateHoldResponse(id, deviceId, body.label, body.imei, startString)
+        val id = holdDao.create(deviceId, body.label, imei, body.start, null)
+
+        val response = CreateHoldResponse(id)
         return Response.status(201).entity(response).build()
     }
 
@@ -81,16 +85,10 @@ class CreateHold(
 data class CreateHoldBody @JsonCreator constructor(
     @JsonProperty("label")
     val label: String,
-    @JsonProperty("imei")
-    val imei: String?,
     @JsonProperty("start")
     val start: Instant,
 )
 
 data class CreateHoldResponse(
-    val id: Int,
-    val deviceId: String,
-    val label: String,
-    val imei: String?,
-    val start: String,
+    val id: Int
 )

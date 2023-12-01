@@ -11,7 +11,7 @@ import api.holds.ReplaceHold
 import database.AccountDao
 import database.DeviceDao
 import database.HoldDao
-import database.labels.FakeLabelsDatabase
+import database.stations.FakeStationsDatabase
 import io.dropwizard.Application
 import io.dropwizard.jdbi3.JdbiFactory
 import io.dropwizard.setup.Environment
@@ -24,8 +24,8 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val jdbi: Jdbi = factory.build(env, config.database, "mysql")
 
         // Use fake label database
-        val fakeLabelDatabase = FakeLabelsDatabase()
-        fakeLabelDatabase.generateLabels()
+        val fakeStationsDatabase = FakeStationsDatabase()
+        fakeStationsDatabase.generateStations()
 
         val accountDao = jdbi.onDemand(AccountDao::class.java)
         val deviceDao = jdbi.onDemand(DeviceDao::class.java)
@@ -37,11 +37,11 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
 
         val createAccount = CreateAccount(accountDao)
         val createDevice = CreateDevice(accountDao, deviceDao)
-        val createHold = CreateHold(fakeLabelDatabase, checker, deviceDao, holdDao, holdFinder, endFinder)
+        val createHold = CreateHold(fakeStationsDatabase, checker, deviceDao, holdDao, holdFinder, endFinder)
         val releaseHold = ReleaseHold(deviceDao, holdDao, holdFinder)
         val getDevicesByAccountId = GetDevicesByAccountId(accountDao, deviceDao)
         val getHoldsByDeviceId = GetHoldsByDeviceId(deviceDao, holdDao)
-        val replaceHold = ReplaceHold(fakeLabelDatabase, checker, deviceDao, holdDao, holdFinder)
+        val replaceHold = ReplaceHold(fakeStationsDatabase, checker, deviceDao, holdDao, holdFinder)
 
         //Register endpoints
         env.jersey().register(createAccount)

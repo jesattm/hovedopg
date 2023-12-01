@@ -21,7 +21,7 @@ interface HoldDao {
     fun create(
         @Bind("deviceId") deviceId: String,
         @Bind("label") label: String,
-        @Bind("imei") imei: String?,
+        @Bind("imei") imei: String,
         @Bind("start") start: Instant,
         @Bind("end") end: Instant?,
     ): Int
@@ -83,7 +83,7 @@ data class Hold(
     val id: Int,
     val deviceId: String,
     val label: String,
-    val imei: String?,
+    val imei: String,
     val start: Timestamp,
     val end: Timestamp?,
 )

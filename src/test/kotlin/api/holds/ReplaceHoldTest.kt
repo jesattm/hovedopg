@@ -8,7 +8,7 @@ import database.Device
 import database.DeviceDao
 import database.Hold
 import database.HoldDao
-import database.labels.FakeLabelsDatabase
+import database.stations.FakeStationsDatabase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 
 class ReplaceHoldTest {
 
-    private lateinit var labels: FakeLabelsDatabase
+    private lateinit var stations: FakeStationsDatabase
     private lateinit var checker: ActiveLabelChecker
     private lateinit var deviceDao: DeviceDao
     private lateinit var holdDao: HoldDao
@@ -26,13 +26,13 @@ class ReplaceHoldTest {
 
     @BeforeEach
     fun setup() {
-        labels = mock()
+        stations = mock()
         checker = mock()
         deviceDao = mock()
         holdDao = mock()
         finder = mock()
 
-        subject = ReplaceHold(labels, checker, deviceDao, holdDao, finder)
+        subject = ReplaceHold(stations, checker, deviceDao, holdDao, finder)
     }
 
     @Test
@@ -41,7 +41,7 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-15T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-16T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         whenever(deviceDao.findById(any())).thenReturn(null)
 
         val res = subject.replace(deviceId, body)
@@ -56,7 +56,7 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-15T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-16T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val holds: List<Hold> = listOf()
         whenever(deviceDao.findById(any())).thenReturn(device)
@@ -74,10 +74,10 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-15T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-16T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val hold = Hold(1, deviceId,"label", null, timestamp, timestamp)
+        val hold = Hold(1, deviceId,"label", "imei", timestamp, timestamp)
         val holds: List<Hold> = listOf(hold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -95,11 +95,11 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-14T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-16T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -117,11 +117,11 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER123"
         val claimed = Instant.parse("2022-12-17T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
@@ -139,16 +139,16 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-17T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
         whenever(finder.find(any())).thenReturn(activeHold)
-        whenever(labels.find(any())).thenReturn(null)
+        whenever(stations.findLabel(any())).thenReturn(null)
 
         val res = subject.replace(deviceId, body)
 
@@ -162,16 +162,16 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-17T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
         whenever(finder.find(any())).thenReturn(activeHold)
-        whenever(labels.find(any())).thenReturn(label)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(true)
 
         val res = subject.replace(deviceId, body)
@@ -186,16 +186,16 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-15T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
         whenever(finder.find(any())).thenReturn(activeHold)
-        whenever(labels.find(any())).thenReturn(label)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
 
         val res = subject.replace(deviceId, body)
@@ -205,22 +205,49 @@ class ReplaceHoldTest {
     }
 
     @Test
+    fun `return status 404 if the provided label has no imei`() {
+        val deviceId = "1"
+        val retired = Instant.parse("2022-12-16T15:00:00Z")
+        val label = "QWER1234"
+        val claimed = Instant.parse("2022-12-17T15:00:00Z")
+        val body = ReplaceHoldBody(retired, label, claimed)
+        val device = Device("1", "1")
+        val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
+        val holds: List<Hold> = listOf(inactiveHold, activeHold)
+        whenever(deviceDao.findById(any())).thenReturn(device)
+        whenever(holdDao.findByDevice(any())).thenReturn(holds)
+        whenever(finder.find(any())).thenReturn(activeHold)
+        whenever(stations.findLabel(any())).thenReturn(label)
+        whenever(checker.check(any())).thenReturn(false)
+        whenever(stations.findImeiByLabel(any())).thenReturn(null)
+
+        val res = subject.replace(deviceId, body)
+
+        val expected = 404
+        assertEquals(expected, res.status)
+    }
+
+    @Test
     fun `set end attribute on the active hold with the input retire value if the request is valid`() {
         val deviceId = "1"
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-17T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
+        val imei = "imei"
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
         whenever(finder.find(any())).thenReturn(activeHold)
-        whenever(labels.find(any())).thenReturn(label)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
+        whenever(stations.findImeiByLabel(any())).thenReturn(imei)
 
         subject.replace(deviceId, body)
 
@@ -232,19 +259,20 @@ class ReplaceHoldTest {
         val deviceId = "1"
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER1234"
-        val imei = "1"
         val claimed = Instant.parse("2022-12-17T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, imei, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
+        val imei = "imei"
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
         whenever(finder.find(any())).thenReturn(activeHold)
-        whenever(labels.find(any())).thenReturn(label)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
+        whenever(stations.findImeiByLabel(any())).thenReturn(imei)
 
         subject.replace(deviceId, body)
 
@@ -257,17 +285,19 @@ class ReplaceHoldTest {
         val retired = Instant.parse("2022-12-16T15:00:00Z")
         val label = "QWER1234"
         val claimed = Instant.parse("2022-12-17T15:00:00Z")
-        val body = ReplaceHoldBody(retired, label, null, claimed)
+        val body = ReplaceHoldBody(retired, label, claimed)
         val device = Device("1", "1")
         val timestamp = Timestamp.from(Instant.parse("2022-12-15T15:00:00Z"))
-        val inactiveHold = Hold(1, deviceId,"label", null, timestamp, timestamp)
-        val activeHold = Hold(2, deviceId,"label", null, timestamp, null)
+        val inactiveHold = Hold(1, deviceId,"label", "1", timestamp, timestamp)
+        val activeHold = Hold(2, deviceId,"label", "2", timestamp, null)
         val holds: List<Hold> = listOf(inactiveHold, activeHold)
+        val imei = "imei"
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
         whenever(finder.find(any())).thenReturn(activeHold)
-        whenever(labels.find(any())).thenReturn(label)
+        whenever(stations.findLabel(any())).thenReturn(label)
         whenever(checker.check(any())).thenReturn(false)
+        whenever(stations.findImeiByLabel(any())).thenReturn(imei)
 
         val res = subject.replace(deviceId, body)
 

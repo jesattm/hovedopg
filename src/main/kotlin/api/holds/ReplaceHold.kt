@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import database.DeviceDao
 import database.HoldDao
-import database.labels.FakeLabelsDatabase
+import database.stations.FakeStationsDatabase
 import java.time.Instant
 import javax.validation.constraints.NotNull
 import javax.ws.rs.Consumes
@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response
 
 @Path("/api/devices/{deviceId}/replace")
 class ReplaceHold(
-    private val labels: FakeLabelsDatabase,
+    private val stations: FakeStationsDatabase,
     private val checker: ActiveLabelChecker,
     private val deviceDao: DeviceDao,
     private val holdDao: HoldDao,
@@ -59,7 +59,7 @@ class ReplaceHold(
             return Response.status(422, "Label must have 8 characters.").build()
         }
 
-        val label = labels.find(body.replacementLabel)
+        val label = stations.findLabel(body.replacementLabel)
         if (label == null) {
             return Response.status(404, "Label not found.").build()
         }
@@ -75,8 +75,13 @@ class ReplaceHold(
                 .build()
         }
 
+        val imei = stations.findImeiByLabel(body.replacementLabel)
+        if (imei == null) {
+            return Response.status(404, "Imei not found.").build()
+        }
+
         holdDao.setEnd(activeHold.id, body.retiredSince)
-        val holdId = holdDao.create(deviceId, body.replacementLabel, body.imei, body.claimedSince, null)
+        val holdId = holdDao.create(deviceId, body.replacementLabel, imei, body.claimedSince, null)
 
         val response = ReplaceHoldResponse(holdId)
         return Response.status(201).entity(response).build()
@@ -89,12 +94,10 @@ data class ReplaceHoldBody @JsonCreator constructor(
     val retiredSince: Instant,
     @JsonProperty("replacementLabel")
     val replacementLabel: String,
-    @JsonProperty("imei")
-    val imei: String?,
     @JsonProperty("claimedSince")
     val claimedSince: Instant,
 )
 
 data class ReplaceHoldResponse(
-    val replacementHoldId: Int,
+    val replacementHoldId: Int
 )

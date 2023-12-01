@@ -55,8 +55,8 @@ class GetHoldsByDeviceIdTest {
         val input = "1"
         val device = Device("1", "1")
         val startInstant = Instant.parse("2022-12-15T15:00:00Z")
-        val hold1 = Hold(1, "1", "1", null, Timestamp.from(startInstant), null)
-        val hold2 = Hold(2, "1", "2", null, Timestamp.from(startInstant), null)
+        val hold1 = Hold(1, "1", "1", "imei", Timestamp.from(startInstant), null)
+        val hold2 = Hold(2, "1", "2", "imei", Timestamp.from(startInstant), null)
         val holds = listOf(hold1, hold2)
         whenever(deviceDao.findById(any())).thenReturn(device)
         whenever(holdDao.findByDevice(any())).thenReturn(holds)
