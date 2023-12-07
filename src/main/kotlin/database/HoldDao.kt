@@ -37,6 +37,19 @@ interface HoldDao {
     )
 
     @SqlUpdate("""
+        UPDATE holds
+        SET 
+            start = COALESCE(:start, start),
+            `end` = COALESCE(:end, `end`)
+        WHERE id = :id
+    """)
+    fun update(
+        @Bind("id") id: Int,
+        @Bind("start") start: Instant? = null,
+        @Bind("end") end: Instant? = null,
+    )
+
+    @SqlUpdate("""
         DELETE FROM holds
         WHERE id = :id
     """)

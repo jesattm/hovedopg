@@ -9,6 +9,7 @@ import api.devices.measurements.MeasurementAggregator
 import api.devices.measurements.MeasurementHoldCombiner
 import api.holds.ActiveHoldFinder
 import api.holds.ActiveLabelChecker
+import api.holds.AdjustHoldTimeframe
 import api.holds.CreateHold
 import api.holds.DeleteHold
 import api.holds.GetHoldsByDeviceId
@@ -63,6 +64,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val deleteHold = DeleteHold(holdDao)
         val deleteDevice = DeleteDevice(deviceDao)
         val deleteAccount = DeleteAccount(accountDao)
+        val adjustHoldTimeframe = AdjustHoldTimeframe(holdDao)
 
         //Register endpoints
         env.jersey().register(createAccount)
@@ -76,6 +78,7 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         env.jersey().register(deleteHold)
         env.jersey().register(deleteDevice)
         env.jersey().register(deleteAccount)
+        env.jersey().register(adjustHoldTimeframe)
     }
 
 }
