@@ -24,7 +24,7 @@ class GetDevicesByAccountId(
     ): Response {
         val account = accountDao.find(accountId)
         if (account == null) {
-            return Response.status(404).build()
+            return Response.status(404, "Account not found.").build()
         }
 
         val devices = deviceDao.findByAccountId(accountId)

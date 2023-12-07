@@ -24,7 +24,7 @@ class GetHoldsByDeviceId(
     ): Response {
         val device = deviceDao.findById(deviceId)
         if (device == null) {
-            return Response.status(404).build()
+            return Response.status(404, "Device not found.").build()
         }
 
         val holds = holdDao.findByDevice(deviceId)
