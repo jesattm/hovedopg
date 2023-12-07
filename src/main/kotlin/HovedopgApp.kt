@@ -1,5 +1,7 @@
 import api.accounts.CreateAccount
+import api.accounts.DeleteAccount
 import api.devices.CreateDevice
+import api.devices.DeleteDevice
 import api.devices.GetDevicesByAccountId
 import api.devices.measurements.GetMeasurements
 import api.devices.measurements.IntervalCreator
@@ -8,6 +10,7 @@ import api.devices.measurements.MeasurementHoldCombiner
 import api.holds.ActiveHoldFinder
 import api.holds.ActiveLabelChecker
 import api.holds.CreateHold
+import api.holds.DeleteHold
 import api.holds.GetHoldsByDeviceId
 import api.holds.LatestEndFinder
 import api.holds.ReleaseHold
@@ -57,6 +60,9 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val getHoldsByDeviceId = GetHoldsByDeviceId(deviceDao, holdDao)
         val replaceHold = ReplaceHold(fakeStationsDatabase, checker, deviceDao, holdDao, holdFinder)
         val getMeasurements = GetMeasurements(deviceDao, holdDao, combiner, creator, aggregator)
+        val deleteHold = DeleteHold(holdDao)
+        val deleteDevice = DeleteDevice(deviceDao)
+        val deleteAccount = DeleteAccount(accountDao)
 
         //Register endpoints
         env.jersey().register(createAccount)
@@ -67,6 +73,9 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         env.jersey().register(getHoldsByDeviceId)
         env.jersey().register(replaceHold)
         env.jersey().register(getMeasurements)
+        env.jersey().register(deleteHold)
+        env.jersey().register(deleteDevice)
+        env.jersey().register(deleteAccount)
     }
 
 }

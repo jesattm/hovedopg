@@ -36,6 +36,12 @@ interface HoldDao {
         @Bind("end") end: Instant,
     )
 
+    @SqlUpdate("""
+        DELETE FROM holds
+        WHERE id = :id
+    """)
+    fun delete(@Bind("id") id: Int)
+
     @SqlQuery("""
         SELECT id, device_id, label, imei, start, end
         FROM holds

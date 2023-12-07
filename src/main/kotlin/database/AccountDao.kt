@@ -19,6 +19,12 @@ interface AccountDao {
         @Bind("apiKey") apiKey: String,
     )
 
+    @SqlUpdate("""
+        DELETE FROM accounts
+        WHERE id = :id
+    """)
+    fun delete(@Bind("id") id: String)
+
     @SqlQuery("""
         SELECT id, api_key
         FROM accounts

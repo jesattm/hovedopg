@@ -19,6 +19,12 @@ interface DeviceDao {
         @Bind("accountId") accountId: String,
     )
 
+    @SqlUpdate("""
+        DELETE FROM devices
+        WHERE id = :id
+    """)
+    fun delete(@Bind("id") id: String)
+
     @SqlQuery("""
         SELECT id, account_id
         FROM devices
