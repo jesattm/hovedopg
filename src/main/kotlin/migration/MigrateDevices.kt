@@ -16,35 +16,38 @@ class MigrateDevices(
         val filtered = filterDevices(events, removedAccounts)
 
         val sorted = filtered.map { list -> list.sortedBy { device -> device.eventId } }
-        var count = 1
+        var count = 0
         var lastHoldId = 0
+        println("-------------- Migrating devices and their holds.. ---------------")
         sorted.forEach { list ->
-            println("---------------- Count = $count -----------------")
-            count += 1
+            if (count % 100 == 0) {
+                println("$count devices migrated..")
+            }
             list.forEach { event ->
                 if (event.eventId == 1) {
                     deviceDao.create(event.deviceId, event.orgId)
                     val claimedAtInstant = Instant.parse(event.claimedAt)
                     lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null)
-                    println("Event id 1 created, lastHoldId = $lastHoldId")
                 }
                 else {
-                    if (event.type == "DEVICE_CLAIMED") {
-                        val claimedAtInstant = Instant.parse(event.claimedAt)
-                        lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null)
-                        println("Event id over 1 created, lastHoldId = $lastHoldId")
-                    }
-                    else if (event.type == "DEVICE_RETIRED") {
-                        val retiredAtInstant = Instant.parse(event.retiredAt)
-                        holdDao.setEnd(lastHoldId, retiredAtInstant)
-                        println("Event id over 1 retired, lastHoldId = $lastHoldId")
-                    }
-                    else {
-                        println("Unknown event type '${event.type}'")
+                    when (event.type) {
+                        "DEVICE_CLAIMED" -> {
+                            val claimedAtInstant = Instant.parse(event.claimedAt)
+                            lastHoldId = holdDao.create(event.deviceId, event.label, event.imei, claimedAtInstant, null)
+                        }
+                        "DEVICE_RETIRED" -> {
+                            val retiredAtInstant = Instant.parse(event.retiredAt)
+                            holdDao.setEnd(lastHoldId, retiredAtInstant)
+                        }
+                        else -> {
+                            println("Unknown event type '${event.type}'")
+                        }
                     }
                 }
             }
+            count += 1
         }
+        println("-------------- Migration of devices and holds finished. $count devices migrated. ---------------")
     }
 
     private fun filterDevices(

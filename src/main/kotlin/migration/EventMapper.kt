@@ -34,25 +34,8 @@ class EventMapper {
             e.printStackTrace()
         }
 
-        printEvents(deviceEvents, accountEvents)
-
         val lists = EventsMapperLists(deviceEvents, accountEvents)
         return lists
-    }
-
-    private fun printEvents(deviceEvents: List<DeviceEvent>, accountEvents: List<AccountEvent>) {
-        println("Device events size: ${deviceEvents.size}")
-        println("First 10 device events:")
-        for (i in 0..9) {
-            println(deviceEvents[i].toString())
-        }
-        println("\n----------------------------------------\n")
-
-        println("Account events size: ${accountEvents.size}")
-        println("First 10 account events:")
-        for (i in 0..9) {
-            println(accountEvents[i].toString())
-        }
     }
 
 }

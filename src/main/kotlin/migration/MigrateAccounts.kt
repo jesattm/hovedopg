@@ -11,9 +11,16 @@ class MigrateAccounts(
         val filtered = filterRemovedAccounts(grouped)
         val list = filtered.flatten()
 
+        println("-------------- Migrating accounts.. --------------")
+        var count = 0
         for (event in list) {
             dao.create(event.accountId, event.apiKey!!)
+            if (count % 100 == 0) {
+                println("$count accounts migrated..")
+            }
+            count++
         }
+        println("-------------- Migration of accounts finished. $count accounts migrated. --------------")
     }
 
     private fun groupById(
