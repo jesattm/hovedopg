@@ -39,7 +39,7 @@ class AdjustHoldTimeframe(
 
         if (body.start != null && body.end != null) {
             if (!body.start.isBefore(body.end)) {
-                return Response.status(409,
+                return Response.status(422,
                     "Start parameter must be before end parameter.").build()
             }
         }
@@ -68,7 +68,7 @@ class AdjustHoldTimeframe(
 
         if (body.end != null) {
             if (hold.end == null) {
-                return Response.status(409,
+                return Response.status(422,
                     "Setting an active hold's end is not allowed here.").build()
             }
 
