@@ -21,6 +21,11 @@ class CreateAccount(
         @NotNull
         body: CreateAccountBody,
     ): Response {
+        val account = dao.find(body.id)
+        if (account != null) {
+            return Response.status(409, "Account id already exists.").build()
+        }
+
         dao.create(body.id, body.apiKey)
 
         return Response.status(204).build()

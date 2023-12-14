@@ -31,6 +31,11 @@ class CreateDevice(
             return Response.status(404, "Account not found.").build()
         }
 
+        val device = deviceDao.findById(body.id)
+        if (device != null) {
+            return Response.status(409, "Device id already exists.").build()
+        }
+
         deviceDao.create(body.id, accountId)
 
         return Response.status(204).build()
