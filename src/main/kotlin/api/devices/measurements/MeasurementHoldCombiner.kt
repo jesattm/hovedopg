@@ -67,8 +67,8 @@ class MeasurementHoldCombiner(
 
     private fun inTimeframe(timeValue: Instant, start: Instant, end: Instant
     ): Boolean {
-        val inTimeframe = timeValue.isAfter(start) || timeValue == start
-            && timeValue.isBefore(end) || timeValue == end
+        val inTimeframe = (timeValue.isAfter(start) || timeValue == start)
+            && (timeValue.isBefore(end) || timeValue == end)
         return inTimeframe
     }
 
