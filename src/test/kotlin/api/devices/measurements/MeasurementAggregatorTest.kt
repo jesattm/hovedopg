@@ -10,11 +10,11 @@ import kotlin.test.assertEquals
 
 class MeasurementAggregatorTest {
 
-    private lateinit var subject: MeasurementAggregator
+    private lateinit var subject: MeasurementsAggregator
 
     @BeforeEach
     fun setup() {
-        subject = MeasurementAggregator()
+        subject = MeasurementsAggregator()
     }
 
     @Test

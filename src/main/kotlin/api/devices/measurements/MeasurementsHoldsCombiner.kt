@@ -5,7 +5,7 @@ import database.measurements.FakeMeasurementsDatabase
 import database.measurements.TimeAndValue
 import java.time.Instant
 
-class MeasurementHoldCombiner(
+class MeasurementsHoldsCombiner(
     private val measurements: FakeMeasurementsDatabase,
     ) {
 

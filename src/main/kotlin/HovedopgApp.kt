@@ -5,8 +5,8 @@ import api.devices.DeleteDevice
 import api.devices.GetDevicesByAccountId
 import api.devices.measurements.GetMeasurements
 import api.devices.measurements.IntervalCreator
-import api.devices.measurements.MeasurementAggregator
-import api.devices.measurements.MeasurementHoldCombiner
+import api.devices.measurements.MeasurementsAggregator
+import api.devices.measurements.MeasurementsHoldsCombiner
 import api.holds.ActiveHoldFinder
 import api.holds.ActiveLabelChecker
 import api.holds.AdjustHoldTimeframe
@@ -49,9 +49,9 @@ class HovedopgApp : Application<HovedopgConfiguration>() {
         val checker = ActiveLabelChecker(holdDao)
         val holdFinder = ActiveHoldFinder()
         val endFinder = LatestEndFinder()
-        val combiner = MeasurementHoldCombiner(fakeMeasurementsDatabase)
+        val combiner = MeasurementsHoldsCombiner(fakeMeasurementsDatabase)
         val creator = IntervalCreator()
-        val aggregator = MeasurementAggregator()
+        val aggregator = MeasurementsAggregator()
 
         val createAccount = CreateAccount(accountDao)
         val createDevice = CreateDevice(accountDao, deviceDao)

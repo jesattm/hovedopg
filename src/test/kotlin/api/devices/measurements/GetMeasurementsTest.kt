@@ -22,9 +22,9 @@ class GetMeasurementsTest {
 
     private lateinit var deviceDao: DeviceDao
     private lateinit var holdDao: HoldDao
-    private lateinit var combiner: MeasurementHoldCombiner
+    private lateinit var combiner: MeasurementsHoldsCombiner
     private lateinit var creator: IntervalCreator
-    private lateinit var aggregator: MeasurementAggregator
+    private lateinit var aggregator: MeasurementsAggregator
     private lateinit var subject: GetMeasurements
 
     @BeforeEach

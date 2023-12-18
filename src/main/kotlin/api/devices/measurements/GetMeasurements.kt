@@ -20,9 +20,9 @@ import javax.ws.rs.core.Response
 class GetMeasurements(
     private val deviceDao: DeviceDao,
     private val holdDao: HoldDao,
-    private val combiner: MeasurementHoldCombiner,
+    private val combiner: MeasurementsHoldsCombiner,
     private val creator: IntervalCreator,
-    private val aggregator: MeasurementAggregator,
+    private val aggregator: MeasurementsAggregator,
 ) {
 
     @GET

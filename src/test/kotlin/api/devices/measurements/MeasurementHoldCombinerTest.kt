@@ -18,13 +18,13 @@ import kotlin.test.assertEquals
 class MeasurementHoldCombinerTest {
 
     private lateinit var measurements: FakeMeasurementsDatabase
-    private lateinit var subject: MeasurementHoldCombiner
+    private lateinit var subject: MeasurementsHoldsCombiner
 
     @BeforeEach
     fun setup() {
         measurements = mock()
 
-        subject = MeasurementHoldCombiner(measurements)
+        subject = MeasurementsHoldsCombiner(measurements)
     }
 
     @Test

@@ -2,7 +2,7 @@ package api.devices.measurements
 
 import database.measurements.TimeAndValue
 
-class MeasurementAggregator {
+class MeasurementsAggregator {
 
         fun aggregate(
             intervals: List<Interval>,
