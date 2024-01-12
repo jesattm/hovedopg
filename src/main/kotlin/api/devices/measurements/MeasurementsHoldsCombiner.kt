@@ -18,7 +18,7 @@ class MeasurementsHoldsCombiner(
         val measurementsList: ArrayList<TimeAndValue> = arrayListOf()
         val sorted = holds.sortedBy { it.start }
         for (hold in sorted) {
-            if (holdInTimeframe(hold, since, until)) {
+            if (periodsOverlap(hold, since, until)) {
                 val start = findHoldStart(since, until, hold)
                 val end = findHoldEnd(since, until, hold)
 
@@ -53,16 +53,17 @@ class MeasurementsHoldsCombiner(
         return holdEnd
     }
 
-    private fun holdInTimeframe(hold: Hold, start: Instant, end: Instant): Boolean {
-        val startInTimeframe = inTimeframe(hold.start.toInstant(), start, end)
-
+    private fun periodsOverlap(hold: Hold, timeframeStart: Instant, timeframeEnd: Instant): Boolean {
+        val holdStart = hold.start.toInstant()
+        val holdEnd: Instant
         if (hold.end == null) {
-            val endInTimeframe = inTimeframe(Instant.now(), start, end)
-            return startInTimeframe || endInTimeframe
+            holdEnd = Instant.now()
+        } else {
+            holdEnd = hold.end.toInstant()
         }
 
-        val endInTimeframe = inTimeframe(hold.end.toInstant(), start, end)
-        return startInTimeframe || endInTimeframe
+        val overlap = (holdStart <= timeframeEnd) && (holdEnd >= timeframeStart)
+        return overlap
     }
 
     private fun inTimeframe(timeValue: Instant, start: Instant, end: Instant
