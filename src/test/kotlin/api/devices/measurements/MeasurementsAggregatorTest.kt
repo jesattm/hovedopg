@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import java.time.Instant
 import kotlin.test.assertEquals
 
-class MeasurementAggregatorTest {
+class MeasurementsAggregatorTest {
 
     private lateinit var subject: MeasurementsAggregator
 
