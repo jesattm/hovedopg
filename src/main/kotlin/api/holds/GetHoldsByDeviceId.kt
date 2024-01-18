@@ -3,6 +3,7 @@ package api.holds
 import database.DeviceDao
 import database.Hold
 import database.HoldDao
+import java.time.Instant
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
@@ -38,8 +39,8 @@ class GetHoldsByDeviceId(
         hold.deviceId,
         hold.label,
         hold.imei,
-        hold.start.toString(),
-        hold.end?.toString(),
+        hold.start.toInstant(),
+        hold.end?.toInstant(),
     )
 
 }
@@ -49,6 +50,6 @@ data class HoldResponse(
     val deviceId: String,
     val label: String,
     val imei: String?,
-    val start: String,
-    val end: String?,
+    val start: Instant,
+    val end: Instant?,
 )
