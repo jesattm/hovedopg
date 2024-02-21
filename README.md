@@ -1,2 +1,2 @@
 # hovedopg
-Main assignment on the 5th semester of Computer Science on EAAA.
+My main assignment on the 5th and last semester of Computer Science on EAAA.
